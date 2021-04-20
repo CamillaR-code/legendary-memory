@@ -9,12 +9,17 @@ import pickle
 import time
 import cv2
 import RPi.GPIO as GPIO
+from gpiozero import LED
 
-RELAY = 17
+RELAY = 26
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(RELAY, GPIO.OUT)
 GPIO.output(RELAY,GPIO.LOW)
+
+led_1 = LED(18)
+led_2 = LED(17)
+led_1.on()
 
 #Initialize 'currentname' to trigger only when a new person is identified.
 currentname = "unknown"
@@ -84,7 +89,10 @@ while True:
 			matchedIdxs = [i for (i, b) in enumerate(matches) if b]
 			counts = {}
 			
+			
 			# to unlock the door
+			led_1.off()
+			led_2.on()
 			GPIO.output(RELAY,GPIO.HIGH)
 			prevTime = time.time()
 			doorUnlock = True
@@ -113,6 +121,8 @@ while True:
         #lock the door after 5 seconds
 	if doorUnlock == True and time.time() – prevTime > 5:
 		doorUnlock = False
+		led_2.off()
+		led_1.on()
 		GPIO.output(RELAY,GPIO.LOW)
 		print("door lock")
 
