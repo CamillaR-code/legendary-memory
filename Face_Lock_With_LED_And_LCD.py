@@ -101,9 +101,9 @@ while True:
 			# to unlock the door
 			led_1.off()
 			led_2.on()
-      lcd.write_string(u'Authorized Access!')
-      time.sleep(5)
-      lcd.clear()
+      			lcd.write_string(u'Authorized Access!')
+      			time.sleep(5)
+      			lcd.clear()
 			GPIO.output(RELAY,GPIO.HIGH)
 			prevTime = time.time()
 			doorUnlock = True
@@ -134,9 +134,9 @@ while True:
 		doorUnlock = False
 		led_2.off()
 		led_1.on()
-    lcd.write_string(u'Access Denied!')
-    time.sleep(5)
-    lcd.clear()
+    		lcd.write_string(u'Access Denied!')
+    		time.sleep(5)
+   		lcd.clear()
 		GPIO.output(RELAY,GPIO.LOW)
 		print("door lock")
 
