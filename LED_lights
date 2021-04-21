@@ -30,3 +30,6 @@ if doorUnlock == True and time.time() – prevTime > 5:
 	lcd.write_string(u'Access Denied!')
     	time.sleep(5)
    	lcd.clear()
+
+
+GPIO.cleanup()
