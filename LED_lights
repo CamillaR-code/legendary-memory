@@ -23,11 +23,10 @@ led_1.on()
   
 #lock the door after 5 seconds
 if doorUnlock == True and time.time() – prevTime > 5:
-      doorUnlock = False
-      led_2.off()
-		   led_1.on()
-    	 lcd.write_string(u'Access Denied!')
-    	 time.sleep(5)
-   		 lcd.clear()
-		   GPIO.output(RELAY,GPIO.LOW)
-		   print("door lock")
+      	doorUnlock = False
+      	led_2.off()
+	led_1.on()
+    	GPIO.output(RELAY,GPIO.LOW)
+	lcd.write_string(u'Access Denied!')
+    	time.sleep(5)
+   	lcd.clear()
