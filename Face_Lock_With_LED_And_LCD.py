@@ -12,7 +12,7 @@ import RPi.GPIO as GPIO
 from gpiozero import LED
 import RPLCD import CharLCD
 
-lcd = CharLCD(number_mode = GPIO.BOARD, cols = 16, rows = 2, pin_rs = 7, pin_e = 35, pins_data = [33, 31, 29, 23])
+lcd = CharLCD(number_mode = GPIO.BOARD, cols = 16, rows = 2, pin_rs = 13, pin_e = 35, pins_data = [33, 31, 29, 23])
 
 
 RELAY = 26
