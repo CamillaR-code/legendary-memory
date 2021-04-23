@@ -24,7 +24,7 @@ GPIO.output(RELAY,GPIO.LOW)
 led_1 = LED(18)
 led_2 = LED(17)
 led_1.on()
-lcd.write_string(u'Access Denied!')
+lcd.write_string(u'Welcome!')
 time.sleep(5)
 lcd.clear()
 
