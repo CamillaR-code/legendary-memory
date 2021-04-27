@@ -1,4 +1,3 @@
-#! /usr/bin/python
 
 # import the necessary packages
 from imutils.video import VideoStream
@@ -9,9 +8,10 @@ import pickle
 import time
 import cv2
 import RPi.GPIO as GPIO
-from gpiozero import LED
-import lcd_prod as lcd
 
+# set up of GPIO for Relay. Setwarnings are set to False to prevent warnings from popping up in terminal.
+# setmode set to BCM; this uses the GPIO number, not the pin number on Raspberry Pi.
+# GPIO.output state of relay set to LOW
 RELAY = 26
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -20,7 +20,7 @@ GPIO.output(RELAY,GPIO.LOW)
 
 #Initialize 'currentname' to trigger only when a new person is identified.
 currentname = "unknown"
-#Determine faces from encodings.pickle file model created from train_model.py
+#Determine faces from encodings.pickle file model created from training_model.py
 encodingsP = "encodings.pickle"
 #use this xml file
 #https://github.com/opencv/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
@@ -35,10 +35,9 @@ detector = cv2.CascadeClassifier(cascade)
 # initialize the video stream and allow the camera sensor to warm up
 print("[INFO] starting video stream…")
 vs = VideoStream(src=0).start()
-#vs = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
 
-# start the FPS counter
+# start the FPS (Frames Per Second)counter 
 fps = FPS().start()
 
 prevTime = 0
@@ -76,7 +75,7 @@ while True:
 		# encodings
 		matches = face_recognition.compare_faces(data["encodings"],
 			encoding)
-		name = "Unknown" #if face is not recognized, then print Unknown
+		name = "Unknown" #if face is not recognized, then print Unknown in terminal
 
 		# check to see if we have found a match
 		if True in matches:
@@ -88,14 +87,15 @@ while True:
 			
 			
 			# to unlock the door
+			# GPIO.output changes state of relay to HIGH
 			GPIO.output(RELAY,GPIO.HIGH)
 			prevTime = time.time()
 			doorUnlock = True
-			print("door unlock")
+			print("door unlock") # printed in terminal
 			
 
 			# loop over the matched indexes and maintain a count for
-			# each recognized face face
+			# each recognized face 
 			for i in matchedIdxs:
 				name = data["names"][i]
 				counts[name] = counts.get(name, 0) + 1
@@ -105,7 +105,7 @@ while True:
 			# will select first entry in the dictionary)
 			name = max(counts, key=counts.get)
 
-			#If someone in your dataset is identified, print their name on the screen
+			# if someone in your dataset is identified, print their name in terminal
 			if currentname != name:
 				currentname = name
 				print(currentname)
@@ -114,10 +114,11 @@ while True:
 		names.append(name)
         
         #lock the door after 5 seconds
+	# GPIO.output changes state of relay to LOW
 	if doorUnlock == True and time.time() – prevTime > 5:
 		doorUnlock = False
 		GPIO.output(RELAY,GPIO.LOW)
-		print("door lock")
+		print("door lock") # printed in terminal
 
 	# loop over the recognized faces
 	for ((top, right, bottom, left), name) in zip(boxes, names):
