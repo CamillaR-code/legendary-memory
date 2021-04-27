@@ -10,6 +10,7 @@ import time
 import cv2
 import RPi.GPIO as GPIO
 from gpiozero import LED
+import lcd_prod as lcd
 
 RELAY = 26
 GPIO.setwarnings(False)
