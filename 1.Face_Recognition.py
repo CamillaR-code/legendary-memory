@@ -1,4 +1,3 @@
-#! /usr/bin/python
 
 # import the necessary packages
 from imutils.video import VideoStream
