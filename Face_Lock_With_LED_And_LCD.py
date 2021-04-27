@@ -1,6 +1,5 @@
-#! /usr/bin/python
 
-# import the necessary packages
+# import the necessary packages and local import
 from imutils.video import VideoStream
 from imutils.video import FPS
 import face_recognition
@@ -10,28 +9,26 @@ import time
 import cv2
 import RPi.GPIO as GPIO
 from gpiozero import LED
-import RPLCD import CharLCD
+import lcd_prod as lcd
 
-lcd = CharLCD(number_mode = GPIO.BOARD, cols = 16, rows = 2, pin_rs = 13, pin_e = 35, pins_data = [33, 31, 29, 23])
-
-
+# set up of GPIO for Relay. Setwarnings are set to False to prevent warnings from popping up in terminal.
+# setmode set to BCM; this uses the GPIO number, not the pin number on Raspberry Pi.
+# GPIO.output state of relay set to LOW
 RELAY = 26
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(RELAY, GPIO.OUT)
 GPIO.output(RELAY,GPIO.LOW)
 
+# set LEDs to GPIO 18 and 17. The led_1 (red) stayes on by default
 led_1 = LED(18)
 led_2 = LED(17)
 led_1.on()
-lcd.write_string(u'Welcome!')
-time.sleep(5)
-lcd.clear()
 
 
 #Initialize 'currentname' to trigger only when a new person is identified.
 currentname = "unknown"
-#Determine faces from encodings.pickle file model created from train_model.py
+#Determine faces from encodings.pickle file model created from training_model.py
 encodingsP = "encodings.pickle"
 #use this xml file
 #https://github.com/opencv/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml
@@ -49,11 +46,15 @@ vs = VideoStream(src=0).start()
 #vs = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
 
-# start the FPS counter
+# start the FPS (Frames Per Second)counter
 fps = FPS().start()
 
 prevTime = 0
 doorUnlock = False
+
+# initialize lcd display and display "DOOR" one line 1 and "LOCKED" on line 2 on LCD screen
+lcd.lcd_init()
+lcd.display_message("DOOR", "LOCKED")
 
 # loop over frames from the video file stream
 while True:
@@ -87,7 +88,7 @@ while True:
 		# encodings
 		matches = face_recognition.compare_faces(data["encodings"],
 			encoding)
-		name = "Unknown" #if face is not recognized, then print Unknown
+		name = "Unknown" #if face is not recognized, then print Unknown in terminal
 
 		# check to see if we have found a match
 		if True in matches:
@@ -97,20 +98,25 @@ while True:
 			matchedIdxs = [i for (i, b) in enumerate(matches) if b]
 			counts = {}
 			
+			# call on lcd_prod.py and print message to lcd display
+			# display "ACCESS" on line 1 and "GRANTED" on line 2 on LCD screen
+			if doorUnlock == False:
+				lcd.display_message("ACCESS", "GRANTED")
 			
 			# to unlock the door
+			# switch off led_1 and switch on led_2
+			# GPIO.output changes state of relay to HIGH
 			led_1.off()
 			led_2.on()
 			GPIO.output(RELAY,GPIO.HIGH)
 			prevTime = time.time()
 			doorUnlock = True
-			lcd.write_string(u'Authorized Access!')
-      			time.sleep(5)
-      			lcd.clear()
+			print("door unlocked") # printed in terminal
+			
 			
 
 			# loop over the matched indexes and maintain a count for
-			# each recognized face face
+			# each recognized face
 			for i in matchedIdxs:
 				name = data["names"][i]
 				counts[name] = counts.get(name, 0) + 1
@@ -120,7 +126,7 @@ while True:
 			# will select first entry in the dictionary)
 			name = max(counts, key=counts.get)
 
-			#If someone in your dataset is identified, print their name on the screen
+			#If someone in your dataset is identified, print their name in terminal
 			if currentname != name:
 				currentname = name
 				print(currentname)
@@ -129,14 +135,18 @@ while True:
 		names.append(name)
         
         #lock the door after 5 seconds
+	# switch off led_2 (green) and switch on led_1 (red)
+	# GPIO.output changes state of relay to LOW
 	if doorUnlock == True and time.time() – prevTime > 5:
 		doorUnlock = False
 		led_2.off()
 		led_1.on()
 		GPIO.output(RELAY,GPIO.LOW)
-		lcd.write_string(u'Access Denied!')
-    		time.sleep(5)
-   		lcd.clear()
+		print("door lock") # printed in terminal
+		
+		
+		# display "DOOR" on line 1 and "LOCKED" on line 2 on LCD screen
+		lcd.display_message("DOOR", "LOCKED")
 		
 
 	# loop over the recognized faces
