@@ -1,3 +1,4 @@
+# import necessary packages
 import time
 import RPi.GPIO as GPIO
 from gpiozero import LED
