@@ -1,14 +1,1 @@
-import time
-from RPLCD import CharLCD
-lcd = CharLCD(number_mode = GPIO.BOARD, cols=16, rows=2, pin_rs=37, pin_e=35, pins_data=[33, 31, 29, 23])
 
-lcd.write_string(u'Access Denied!')
-time.sleep(5)
-lcd.clear()
-
-lcd.write_string(u'Authorized Access!')
-time.sleep(5)
-lcd.clear()
-
-Borrowed from
-https://www.circuitbasics.com/raspberry-pi-lcd-set-up-and-programming-in-python/
