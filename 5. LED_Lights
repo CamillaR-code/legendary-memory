@@ -17,6 +17,9 @@ led_1 = LED(18)
 led_2 = LED(17)
 led_1.on()
 
+prevTime = 0
+doorUnlock = False
+
 # to unlock the door
 # switch off led_1 (red) and switch on led_2 (green)
 # GPIO.output changes state of relay to HIGH
